@@ -1,0 +1,202 @@
+@model IEnumerable<QuanLyThueXe.Models.Notification>
+@using QuanLyThueXe.Helpers
+
+@{
+    ViewData["Title"] = "Thông báo";
+    var unreadCount = ViewBag.UnreadCount as int? ?? 0;
+    var totalCount = ViewBag.TotalCount as int? ?? 0;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🔔 Thông báo</h2>
+        <div>
+            @if (unreadCount > 0)
+            {
+                <button id="markAllReadBtn" class="btn btn-outline-primary">
+                    ✅ Đánh dấu tất cả đã đọc
+                </button>
+            }
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0">Tổng số: @totalCount thông báo</h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    @if (unreadCount > 0)
+                    {
+                        <span class="badge bg-danger">@unreadCount chưa đọc</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Đã đọc tất cả</span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="list-group list-group-flush">
+                    @foreach (var notification in Model)
+                    {
+                        var isUnread = !notification.IsRead.HasValue || !notification.IsRead.Value;
+                        <div class="list-group-item @(isUnread ? "bg-light" : "")" data-notification-id="@notification.NotificationId">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    @if (isUnread)
+                                    {
+                                        <span class="badge bg-primary me-2">Mới</span>
+                                    }
+                                    <p class="mb-1 @(isUnread ? "fw-bold" : "")">@notification.Message</p>
+                                    <small class="text-muted">
+                                        📅 @DateHelper.FormatDateTime(notification.CreatedAt)
+                                        @if (notification.ReservationId.HasValue)
+                                        {
+                                            <span> | Đơn đặt: #@notification.ReservationId</span>
+                                        }
+                                    </small>
+                                </div>
+                                <div class="ms-3">
+                                    @if (isUnread)
+                                    {
+                                        <button class="btn btn-sm btn-outline-success mark-read-btn" 
+                                                data-id="@notification.NotificationId"
+                                                title="Đánh dấu đã đọc">
+                                            ✓
+                                        </button>
+                                    }
+                                    <button class="btn btn-sm btn-outline-danger delete-notification-btn" 
+                                            data-id="@notification.NotificationId"
+                                            title="Xóa thông báo">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <span style="font-size: 4rem;">📭</span>
+                    </div>
+                    <h5>Chưa có thông báo nào</h5>
+                    <p class="text-muted">Bạn sẽ nhận được thông báo khi có cập nhật mới.</p>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                        ⬅️ Quay lại trang chủ
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+            ⬅️ Quay lại trang chủ
+        </a>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        function getToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+        }
+
+        // Đánh dấu đã đọc
+        document.querySelectorAll('.mark-read-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("MarkAsRead", "Notification")';
+                
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = getToken();
+                form.appendChild(tokenInput);
+                
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'id';
+                idInput.value = id;
+                form.appendChild(idInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            });
+        });
+
+        // Đánh dấu tất cả đã đọc
+        document.getElementById('markAllReadBtn')?.addEventListener('click', function() {
+            if (confirm('Bạn có chắc muốn đánh dấu tất cả thông báo là đã đọc?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("MarkAllAsRead", "Notification")';
+                
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = getToken();
+                form.appendChild(tokenInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+
+        // Xóa thông báo
+        document.querySelectorAll('.delete-notification-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('Bạn có chắc muốn xóa thông báo này?')) {
+                    const id = this.getAttribute('data-id');
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '@Url.Action("Delete", "Notification")';
+                    
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = getToken();
+                    form.appendChild(tokenInput);
+                    
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'id';
+                    idInput.value = id;
+                    form.appendChild(idInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    </script>
+}
+

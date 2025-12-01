@@ -238,6 +238,23 @@ namespace QuanLyThueXe.Controllers
         }
 
         // =======================
+        // Xem chi tiết xe (cho phép khách hàng xem)
+        // =======================
+        public IActionResult Details(int id)
+        {
+            var car = _db.Cars.Find(id);
+            if (car == null) return NotFound();
+
+            // Cho phép tất cả người dùng (kể cả chưa đăng nhập) xem chi tiết xe
+            // Nhưng chỉ Admin/Manager mới thấy nút Sửa
+            var role = _httpContextAccessor.HttpContext.Session.GetString("Role") ?? "";
+            ViewBag.CanEdit = role == "Admin" || role == "Manager";
+            ViewBag.IsLoggedIn = _httpContextAccessor.HttpContext.Session.GetInt32("UserId") != null;
+
+            return View(car);
+        }
+
+        // =======================
         // Load danh sách ảnh
         // =======================
         private void LoadImageList(string selectedImage)

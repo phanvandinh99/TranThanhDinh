@@ -1,0 +1,126 @@
+@model QuanLyThueXe.Models.Reservation
+@using QuanLyThueXe.Helpers
+
+@{
+    ViewData["Title"] = "Đặt thuê xe";
+    var selectedCar = ViewBag.SelectedCar as QuanLyThueXe.Models.Car;
+    var customerName = ViewBag.CustomerName as string;
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">📝 Đặt thuê xe</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (selectedCar != null)
+    {
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">🚗 Xe bạn đã chọn</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src="@ImageHelper.GetCarImageUrl(selectedCar)" 
+                             alt="@selectedCar.Brand @selectedCar.Model" 
+                             class="img-fluid rounded" 
+                             style="max-height: 150px; object-fit: cover;" />
+                    </div>
+                    <div class="col-md-9">
+                        <h5>@selectedCar.Brand @selectedCar.Model</h5>
+                        <p class="mb-1"><strong>Biển số:</strong> @selectedCar.LicensePlate</p>
+                        <p class="mb-1"><strong>Loại xe:</strong> <span class="badge bg-info">@selectedCar.VehicleType</span></p>
+                        <p class="mb-0"><strong>Giá thuê:</strong> <span class="text-danger h5">@PriceHelper.FormatPrice(selectedCar.PricePerDay)</span>/ngày</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <form asp-action="Create" method="post" class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Thông tin đặt xe</h5>
+        </div>
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="ReservationId" />
+            <input type="hidden" asp-for="Status" value="Pending" />
+
+            @if (customerName != null)
+            {
+                <div class="alert alert-info">
+                    <strong>Khách hàng:</strong> @customerName
+                </div>
+            }
+
+            <div class="mb-3">
+                <label asp-for="CustomerId" class="form-label">Khách hàng <span class="text-danger">*</span></label>
+                <select asp-for="CustomerId" asp-items="ViewBag.CustomerId" class="form-select">
+                    <option value="">-- Chọn khách hàng --</option>
+                </select>
+                <span asp-validation-for="CustomerId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CarId" class="form-label">Xe thuê <span class="text-danger">*</span></label>
+                <select asp-for="CarId" asp-items="ViewBag.CarId" class="form-select">
+                    <option value="">-- Chọn xe --</option>
+                </select>
+                <span asp-validation-for="CarId" class="text-danger"></span>
+                <small class="form-text text-muted">Chỉ hiển thị các xe đang có sẵn</small>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ReservationDate" class="form-label">Ngày đặt <span class="text-danger">*</span></label>
+                <input asp-for="ReservationDate" type="datetime-local" class="form-control" 
+                       value="@(Model.ReservationDate?.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))" />
+                <span asp-validation-for="ReservationDate" class="text-danger"></span>
+                <small class="form-text text-muted">Ngày bạn muốn bắt đầu thuê xe</small>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>📌 Lưu ý:</strong>
+                <ul class="mb-0">
+                    <li>Đơn đặt xe của bạn sẽ ở trạng thái <strong>"Chờ duyệt"</strong></li>
+                    <li>Nhân viên sẽ liên hệ với bạn để xác nhận và hoàn tất thủ tục</li>
+                    <li>Bạn có thể theo dõi trạng thái đơn đặt xe trong tài khoản của mình</li>
+                </ul>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    ✅ Gửi đơn đặt xe
+                </button>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary btn-lg">
+                    ⬅️ Quay lại
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Tự động chọn xe nếu có carId từ route
+        @if (selectedCar != null)
+        {
+            <text>
+            document.addEventListener('DOMContentLoaded', function() {
+                var carSelect = document.getElementById('CarId');
+                if (carSelect) {
+                    carSelect.value = '@selectedCar.CarId';
+                }
+            });
+            </text>
+        }
+    </script>
+}
+

@@ -1,0 +1,125 @@
+@model IEnumerable<QuanLyThueXe.Models.Reservation>
+@using QuanLyThueXe.Helpers
+
+@{
+    ViewData["Title"] = "Lịch sử đặt xe của tôi";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">📋 Lịch sử đặt xe của tôi</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @TempData["InfoMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var reservation in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Đơn #@reservation.ReservationId</h5>
+                            @if (reservation.Status == "Pending")
+                            {
+                                <span class="badge bg-warning">Chờ duyệt</span>
+                            }
+                            else if (reservation.Status == "Approved")
+                            {
+                                <span class="badge bg-success">Đã duyệt</span>
+                            }
+                            else if (reservation.Status == "Cancelled")
+                            {
+                                <span class="badge bg-danger">Đã hủy</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@reservation.Status</span>
+                            }
+                        </div>
+                        <div class="card-body">
+                            @if (reservation.Car != null)
+                            {
+                                <div class="row mb-3">
+                                    <div class="col-4">
+                                        <img src="@ImageHelper.GetCarImageUrl(reservation.Car)" 
+                                             alt="@reservation.Car.Brand @reservation.Car.Model" 
+                                             class="img-fluid rounded" 
+                                             style="max-height: 100px; object-fit: cover;" />
+                                    </div>
+                                    <div class="col-8">
+                                        <h6>@reservation.Car.Brand @reservation.Car.Model</h6>
+                                        <p class="mb-1"><small>Biển số: @reservation.Car.LicensePlate</small></p>
+                                        <p class="mb-0"><small>Giá: @PriceHelper.FormatPrice(reservation.Car.PricePerDay)/ngày</small></p>
+                                    </div>
+                                </div>
+                            }
+
+                            <hr />
+
+                            <p class="mb-1">
+                                <strong>Ngày đặt:</strong> 
+                                @DateHelper.FormatDateTime(reservation.ReservationDate)
+                            </p>
+                            <p class="mb-0">
+                                <strong>Trạng thái:</strong> 
+                                @if (reservation.Status == "Pending")
+                                {
+                                    <span class="text-warning">⏳ Chờ duyệt - Nhân viên sẽ liên hệ với bạn sớm nhất</span>
+                                }
+                                else if (reservation.Status == "Approved")
+                                {
+                                    <span class="text-success">✅ Đã được duyệt - Vui lòng đến cửa hàng để hoàn tất thủ tục</span>
+                                }
+                                else if (reservation.Status == "Cancelled")
+                                {
+                                    <span class="text-danger">❌ Đã bị hủy</span>
+                                }
+                                else
+                                {
+                                    <span>@reservation.Status</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a asp-action="Details" asp-route-id="@reservation.ReservationId" 
+                               class="btn btn-sm btn-outline-primary">
+                                👁️ Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <h5>Bạn chưa có đơn đặt xe nào</h5>
+            <p>Hãy chọn một chiếc xe và đặt thuê ngay!</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                🚗 Xem danh sách xe
+            </a>
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+            ⬅️ Quay lại trang chủ
+        </a>
+    </div>
+</div>
+

@@ -62,6 +62,15 @@ namespace QuanLyThueXe.Helpers
         {
             return session.GetString("Role") ?? "User";
         }
+
+        /// <summary>
+        /// Kiểm tra user có phải là Customer không
+        /// </summary>
+        public static bool IsCustomer(ISession session)
+        {
+            string role = session.GetString("Role") ?? "";
+            return role == "Customer" || role == "User";
+        }
     }
 }
 

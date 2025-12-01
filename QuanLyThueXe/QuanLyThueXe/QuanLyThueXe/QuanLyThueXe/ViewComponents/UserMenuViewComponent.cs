@@ -13,6 +13,7 @@ namespace QuanLyThueXe.ViewComponents
             ViewBag.Role = AuthHelper.GetRole(session);
             ViewBag.IsAdmin = AuthHelper.IsAdmin(session);
             ViewBag.IsAuthorized = AuthHelper.IsAuthorized(session);
+            ViewBag.IsCustomer = AuthHelper.IsCustomer(session);
             
             return View();
         }

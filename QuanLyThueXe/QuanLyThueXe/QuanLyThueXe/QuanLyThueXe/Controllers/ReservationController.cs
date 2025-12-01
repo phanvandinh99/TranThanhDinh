@@ -289,6 +289,39 @@ namespace QuanLyThueXe.Controllers
         }
 
         // ===================================
+        // MY RESERVATIONS (Cho khách hàng xem đơn đặt của mình)
+        // ===================================
+        public IActionResult MyReservations()
+        {
+            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (!userId.HasValue) return RedirectToAction("Login", "Account");
+
+            var user = _db.Users.Find(userId.Value);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            // Tìm Customer theo email hoặc tên
+            var customer = _db.Customers
+                .FirstOrDefault(c => c.Email == user.Email || c.FullName == user.FullName);
+
+            if (customer == null)
+            {
+                TempData["InfoMessage"] = "Bạn chưa có đơn đặt xe nào.";
+                return View(new List<Reservation>());
+            }
+
+            var reservations = _db.Reservations
+                .Include(r => r.Car)
+                .Include(r => r.Customer)
+                .Where(r => r.CustomerId == customer.CustomerId)
+                .OrderByDescending(r => r.ReservationDate)
+                .ToList();
+
+            return View(reservations);
+        }
+
+        // ===================================
         // DETAILS
         // ===================================
         public IActionResult Details(int id)

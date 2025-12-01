@@ -14,17 +14,23 @@
                 Giá thuê: @ViewBag.PriceFormatted/ngày
             </p>
 
-            @if (Model.Status == "Available")
-            {
-                <a asp-controller="Reservation" asp-action="Create" asp-route-carId="@Model.CarId"
-                   class="btn btn-primary btn-sm">
-                    Thuê ngay
+            <div class="d-flex gap-2">
+                <a asp-controller="Car" asp-action="Details" asp-route-id="@Model.CarId"
+                   class="btn btn-outline-primary btn-sm">
+                    Chi tiết
                 </a>
-            }
-            else
-            {
-                <span class="btn btn-danger btn-sm disabled">Đã thuê</span>
-            }
+                @if (Model.Status == "Available")
+                {
+                    <a asp-controller="Reservation" asp-action="Create" asp-route-carId="@Model.CarId"
+                       class="btn btn-primary btn-sm">
+                        🚗 Thuê ngay
+                    </a>
+                }
+                else
+                {
+                    <span class="btn btn-danger btn-sm disabled">Đã thuê</span>
+                }
+            </div>
         </div>
     </div>
 </div>
