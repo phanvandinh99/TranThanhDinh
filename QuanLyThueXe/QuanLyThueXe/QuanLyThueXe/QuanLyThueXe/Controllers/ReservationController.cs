@@ -30,15 +30,39 @@ namespace QuanLyThueXe.Controllers
         // ===================================
         // INDEX
         // ===================================
-        public IActionResult Index()
+        public IActionResult Index(string searchTerm = "", string statusFilter = "All")
         {
             if (!IsAuthorized()) return RedirectToAction("Login", "Account");
 
-            var reservations = _db.Reservations
+            var reservationsQuery = _db.Reservations
                 .Include(r => r.Car)
                 .Include(r => r.Customer)
+                .AsQueryable();
+
+            // Tìm kiếm theo từ khóa
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                reservationsQuery = reservationsQuery.Where(r =>
+                    (r.Car != null && (r.Car.LicensePlate.Contains(searchTerm) || 
+                                      (r.Car.Brand != null && r.Car.Brand.Contains(searchTerm)) ||
+                                      (r.Car.Model != null && r.Car.Model.Contains(searchTerm)))) ||
+                    (r.Customer != null && (r.Customer.FullName != null && r.Customer.FullName.Contains(searchTerm) ||
+                                           (r.Customer.Phone != null && r.Customer.Phone.Contains(searchTerm)) ||
+                                           (r.Customer.Email != null && r.Customer.Email.Contains(searchTerm)))));
+            }
+
+            // Lọc theo trạng thái
+            if (statusFilter != "All" && !string.IsNullOrEmpty(statusFilter))
+            {
+                reservationsQuery = reservationsQuery.Where(r => r.Status == statusFilter);
+            }
+
+            var reservations = reservationsQuery
                 .OrderByDescending(r => r.ReservationDate)
                 .ToList();
+
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.StatusFilter = statusFilter;
 
             return View(reservations);
         }

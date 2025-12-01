@@ -1,0 +1,260 @@
+@model QuanLyThueXe.Models.Reservation
+@using QuanLyThueXe.Helpers
+
+@{
+    ViewData["Title"] = "Chi tiết đơn đặt xe";
+    var role = Context.Session.GetString("Role") ?? "";
+    var isAuthorized = role == "Admin" || role == "Manager" || role == "Cashier";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">📋 Chi tiết đơn đặt xe #@Model.ReservationId</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Thông tin đơn đặt -->
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Thông tin đơn đặt</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">Mã đơn:</th>
+                            <td><strong>#@Model.ReservationId</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Ngày đặt:</th>
+                            <td>@DateHelper.FormatDateTime(Model.ReservationDate)</td>
+                        </tr>
+                        <tr>
+                            <th>Trạng thái:</th>
+                            <td>
+                                @if (Model.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning">⏳ Chờ duyệt</span>
+                                }
+                                else if (Model.Status == "Approved")
+                                {
+                                    <span class="badge bg-success">✅ Đã duyệt</span>
+                                }
+                                else if (Model.Status == "Cancelled")
+                                {
+                                    <span class="badge bg-danger">❌ Đã hủy</span>
+                                }
+                                else if (Model.Status == "Completed")
+                                {
+                                    <span class="badge bg-secondary">✓ Hoàn thành</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">@Model.Status</span>
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Thông tin xe -->
+            @if (Model.Car != null)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">🚗 Thông tin xe</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="@ImageHelper.GetCarImageUrl(Model.Car)" 
+                                     alt="@Model.Car.Brand @Model.Car.Model" 
+                                     class="img-fluid rounded" 
+                                     style="max-height: 200px; object-fit: cover;" />
+                            </div>
+                            <div class="col-md-8">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Hãng/Model:</th>
+                                        <td><strong>@Model.Car.Brand @Model.Car.Model</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Biển số:</th>
+                                        <td>@Model.Car.LicensePlate</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Loại xe:</th>
+                                        <td><span class="badge bg-info">@Model.Car.VehicleType</span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Giá thuê/ngày:</th>
+                                        <td>@PriceHelper.FormatPrice(Model.Car.PricePerDay)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Trạng thái xe:</th>
+                                        <td>
+                                            @if (Model.Car.Status == "Available")
+                                            {
+                                                <span class="badge bg-success">Có sẵn</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Đang thuê</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                </table>
+                                <a asp-controller="Car" asp-action="Details" asp-route-id="@Model.Car.CarId" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    👁️ Xem chi tiết xe
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Thông tin khách hàng -->
+            @if (Model.Customer != null)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">👤 Thông tin khách hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="30%">Họ tên:</th>
+                                <td><strong>@Model.Customer.FullName</strong></td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(Model.Customer.Phone))
+                            {
+                                <tr>
+                                    <th>Số điện thoại:</th>
+                                    <td>📞 @Model.Customer.Phone</td>
+                                </tr>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Customer.Email))
+                            {
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>📧 @Model.Customer.Email</td>
+                                </tr>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Customer.Address))
+                            {
+                                <tr>
+                                    <th>Địa chỉ:</th>
+                                    <td>📍 @Model.Customer.Address</td>
+                                </tr>
+                            }
+                            @if (Model.Customer.IdentityCard != null)
+                            {
+                                <tr>
+                                    <th>CCCD:</th>
+                                    <td>🆔 @Model.Customer.IdentityCard</td>
+                                </tr>
+                            }
+                        </table>
+                        @if (isAuthorized)
+                        {
+                            <a asp-controller="Customer" asp-action="Details" asp-route-id="@Model.Customer.CustomerId" 
+                               class="btn btn-outline-primary btn-sm">
+                                👁️ Xem chi tiết khách hàng
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar - Thao tác -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Thao tác</h5>
+                </div>
+                <div class="card-body">
+                    @if (isAuthorized)
+                    {
+                        @if (Model.Status == "Pending")
+                        {
+                            <form asp-action="Approve" asp-route-id="@Model.ReservationId" method="post" class="mb-2">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success w-100" 
+                                        onclick="return confirm('Bạn có chắc muốn duyệt đơn đặt này?');">
+                                    ✅ Duyệt đơn
+                                </button>
+                            </form>
+                            <form asp-action="Cancel" asp-route-id="@Model.ReservationId" method="post" class="mb-2">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger w-100" 
+                                        onclick="return confirm('Bạn có chắc muốn hủy đơn đặt này?');">
+                                    ❌ Hủy đơn
+                                </button>
+                            </form>
+                        }
+                        @if (Model.Status != "Cancelled" && Model.Status != "Completed")
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.ReservationId" class="btn btn-warning w-100 mb-2">
+                                ✏️ Sửa đơn đặt
+                            </a>
+                        }
+                        @if (Model.Status == "Cancelled" || Model.Status == "Completed")
+                        {
+                            <form asp-action="Delete" asp-route-id="@Model.ReservationId" method="post" class="mb-2">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger w-100" 
+                                        onclick="return confirm('Bạn có chắc muốn xóa đơn đặt này?');">
+                                    🗑️ Xóa đơn đặt
+                                </button>
+                            </form>
+                        }
+                        <hr />
+                    }
+                    <a asp-action="Index" class="btn btn-secondary w-100 mb-2">
+                        ⬅️ Quay lại danh sách
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary w-100">
+                        🏠 Trang chủ
+                    </a>
+                </div>
+            </div>
+
+            <!-- Thông báo liên quan -->
+            @if (Model.Notifications != null && Model.Notifications.Any())
+            {
+                <div class="card shadow mt-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0">🔔 Thông báo liên quan</h6>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var notification in Model.Notifications.OrderByDescending(n => n.CreatedAt).Take(5))
+                        {
+                            <div class="mb-2 p-2 border rounded">
+                                <small class="text-muted">@DateHelper.FormatDateTime(notification.CreatedAt)</small>
+                                <p class="mb-0 small">@notification.Message</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
