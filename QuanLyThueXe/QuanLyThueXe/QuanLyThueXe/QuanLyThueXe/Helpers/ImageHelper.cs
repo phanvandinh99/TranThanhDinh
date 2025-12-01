@@ -14,9 +14,13 @@ namespace QuanLyThueXe.Helpers
 
             if (!string.IsNullOrEmpty(car.ImageUrl))
             {
-                // Nếu ImageUrl đã là đường dẫn đầy đủ, dùng trực tiếp
+                // Nếu ImageUrl đã là đường dẫn đầy đủ
                 if (car.ImageUrl.StartsWith("/"))
-                    return car.ImageUrl;
+                {
+                    // Sửa đường dẫn sai: motorbikes -> motobikes (không có chữ r)
+                    string correctedUrl = car.ImageUrl.Replace("/images/motorbikes/", "/images/motobikes/");
+                    return correctedUrl;
+                }
 
                 // Nếu không, xây dựng đường dẫn dựa trên VehicleType
                 string folder = car.VehicleType == "Car" ? "cars" :
@@ -37,7 +41,11 @@ namespace QuanLyThueXe.Helpers
                 return "/images/cars/car404.jpg";
 
             if (imageUrl.StartsWith("/"))
-                return imageUrl;
+            {
+                // Sửa đường dẫn sai: motorbikes -> motobikes (không có chữ r)
+                string correctedUrl = imageUrl.Replace("/images/motorbikes/", "/images/motobikes/");
+                return correctedUrl;
+            }
 
             string folder = vehicleType == "Car" ? "cars" :
                             vehicleType == "Motorbike" ? "motobikes" : "cars";

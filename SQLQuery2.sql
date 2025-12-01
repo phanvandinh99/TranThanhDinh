@@ -73,10 +73,10 @@ INSERT INTO Cars (LicensePlate, Brand, Model, PricePerDay, Status, VehicleType, 
 
 -- Thêm dữ liệu xe máy
 INSERT INTO Cars (LicensePlate, Brand, Model, PricePerDay, Status, VehicleType, ImageUrl) VALUES
-('59X1-12345', 'Honda', 'Air Blade',   150000, 'Available', 'Motorbike', '/images/motorbikes/airblade.jpg'),
-('59Y2-67890', 'Yamaha','Exciter 150', 180000, 'Available', 'Motorbike', '/images/motorbikes/exciter.png'),
-('50Z3-11223', 'Honda', 'SH 150i',     250000, 'Available', 'Motorbike', '/images/motorbikes/sh150i.jpg'),
-('60M4-44556', 'Suzuki','Raider',      160000, 'Available', 'Motorbike', '/images/motorbikes/raider.jpg');
+('59X1-12345', 'Honda', 'Air Blade',   150000, 'Available', 'Motorbike', '/images/motobikes/airblade.jpg'),
+('59Y2-67890', 'Yamaha','Exciter 150', 180000, 'Available', 'Motorbike', '/images/motobikes/exciter.png'),
+('50Z3-11223', 'Honda', 'SH 150i',     250000, 'Available', 'Motorbike', '/images/motobikes/sh150i.png'),
+('60M4-44556', 'Suzuki','Raider',      160000, 'Available', 'Motorbike', '/images/motobikes/raider.png');
 GO
 
 -- Chuẩn hóa VehicleType (mặc dù đã chuẩn khi insert, nhưng thêm đảm bảo)
