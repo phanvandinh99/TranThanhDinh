@@ -1,0 +1,90 @@
+﻿@model QuanLyThueXe.Models.Driver
+
+@{
+    ViewData["Title"] = "Sửa tài xế";
+}
+
+<h2 class="mb-4">Sửa thông tin tài xế</h2>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="DriverId" type="hidden" />
+
+    <div class="row mb-3">
+        <label asp-for="FullName" class="col-md-2 col-form-label">Họ và tên</label>
+        <div class="col-md-10">
+            <input asp-for="FullName" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label asp-for="Gender" class="col-md-2 col-form-label">Giới tính</label>
+        <div class="col-md-10">
+            <select asp-for="Gender" class="form-control">
+                <option>Nam</option>
+                <option>Nữ</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label asp-for="Age" class="col-md-2 col-form-label">Tuổi</label>
+        <div class="col-md-10">
+            <input asp-for="Age" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label asp-for="Phone" class="col-md-2 col-form-label">SĐT</label>
+        <div class="col-md-10">
+            <input asp-for="Phone" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label asp-for="ExperienceYears" class="col-md-2 col-form-label">Kinh nghiệm</label>
+        <div class="col-md-10">
+            <input asp-for="ExperienceYears" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label asp-for="LicenseType" class="col-md-2 col-form-label">Loại bằng</label>
+        <div class="col-md-10">
+            <input asp-for="LicenseType" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label asp-for="PricePerDay" class="col-md-2 col-form-label">Giá thuê/ngày</label>
+        <div class="col-md-10">
+            <input asp-for="PricePerDay" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label asp-for="ImageUrl" class="col-md-2 col-form-label">Ảnh (URL)</label>
+        <div class="col-md-10">
+            <input asp-for="ImageUrl" class="form-control" />
+        </div>
+    </div>
+
+    <div class="form-check form-switch mb-3 ms-2">
+        <input class="form-check-input" type="checkbox" role="switch"
+               onclick="location.href='@Url.Action("ToggleStatus","Driver", new { id = Model.DriverId })'"
+        @(Model.IsAvailable == true ? "checked" : "") />
+        <label class="form-check-label">
+            @(Model.IsAvailable == true ? "Đang rảnh" : "Đang bận")
+        </label>
+    </div>
+
+
+    <div class="row mb-3">
+        <label asp-for="Description" class="col-md-2 col-form-label">Mô tả</label>
+        <div class="col-md-10">
+            <textarea asp-for="Description" rows="4" class="form-control"></textarea>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

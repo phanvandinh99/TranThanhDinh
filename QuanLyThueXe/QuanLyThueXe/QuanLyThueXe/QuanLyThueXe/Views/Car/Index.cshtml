@@ -1,0 +1,41 @@
+﻿@model IEnumerable<QuanLyThueXe.Models.Car>
+
+@{
+    ViewData["Title"] = "Quản lý xe";
+}
+
+<h2>Quản lý xe</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">➕ Thêm xe mới</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Biển số</th>
+            <th>Hãng</th>
+            <th>Model</th>
+            <th>Giá thuê/ngày</th>
+            <th>Trạng thái</th>
+            <th>Chức năng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var car in Model)
+        {
+            <tr>
+                <td>@car.LicensePlate</td>
+                <td>@car.Brand</td>
+                <td>@car.Model</td>
+                <td>@string.Format("{0:N0} VND", car.PricePerDay)</td>
+                <td>@car.Status</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@car.CarId">✏️ Sửa</a> |
+                    <a asp-action="Details" asp-route-id="@car.CarId">🔍 Chi tiết</a> |
+                    <a asp-action="Delete" asp-route-id="@car.CarId">🗑️ Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

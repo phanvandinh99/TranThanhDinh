@@ -1,0 +1,21 @@
+﻿@model QuanLyThueXe.Models.Car
+
+@{
+    ViewData["Title"] = "Chi tiết xe";
+}
+
+<h2>Chi tiết xe</h2>
+
+<table class="table table-bordered">
+    <tr><th>Mã xe</th><td>@Model.CarId</td></tr>
+    <tr><th>Biển số</th><td>@Model.LicensePlate</td></tr>
+    <tr><th>Hãng</th><td>@Model.Brand</td></tr>
+    <tr><th>Model</th><td>@Model.Model</td></tr>
+    <tr><th>Giá/ngày</th><td>@String.Format("{0:N0} VND", Model.PricePerDay)</td></tr>
+    <tr><th>Trạng thái</th><td>@Model.Status</td></tr>
+</table>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.CarId">✏️ Sửa</a> |
+    <a asp-action="Index">⬅️ Quay lại</a>
+</p>

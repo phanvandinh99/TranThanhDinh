@@ -1,0 +1,48 @@
+﻿@model QuanLyThueXe.Models.Customer
+@{
+    ViewBag.Title = "Chi tiết khách hàng";
+    var activeContract = ViewBag.ActiveContract as QuanLyThueXe.Models.Contract;
+}
+
+<h2>Chi tiết: @Model.FullName</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">CCCD</dt>
+    <dd class="col-sm-9">@Model.IdentityCard</dd>
+
+    <dt class="col-sm-3">SĐT</dt>
+    <dd class="col-sm-9">@Model.Phone</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Địa chỉ</dt>
+    <dd class="col-sm-9">@Model.Address</dd>
+
+    <dt class="col-sm-3">Giới tính</dt>
+    <dd class="col-sm-9">@Model.Gender</dd>
+
+    <dt class="col-sm-3">Ngày sinh</dt>
+    <dd class="col-sm-9">@Model.BirthDate?.ToString("dd/MM/yyyy")</dd>
+</dl>
+
+<h4>Thông tin hợp đồng (nếu có)</h4>
+@if (activeContract != null)
+{
+    <ul>
+        <li>Hợp đồng: @activeContract.ContractId</li>
+        <li>Xe: @activeContract.Car.Brand - @activeContract.Car.Model</li>
+        <li>Ngày thuê: @activeContract.StartDate.ToString("dd/MM/yyyy")</li>
+        <li>Ngày trả: @activeContract.EndDate.ToString("dd/MM/yyyy")</li>
+        <li>Tổng: @String.Format("{0:N0}", activeContract.TotalAmount) VND</li>
+    </ul>
+}
+else
+{
+    <p class="text-muted">Khách hàng hiện không có hợp đồng đang hoạt động.</p>
+}
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.CustomerId" class="btn btn-warning">Sửa</a>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</p>

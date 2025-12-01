@@ -1,0 +1,87 @@
+﻿@model QuanLyThueXe.Models.Contract
+
+@{
+    ViewBag.Title = "Sửa hợp đồng";
+}
+
+<h2>Sửa hợp đồng #@Model.ContractId</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ContractId" />
+    <input type="hidden" asp-for="ContractDate" />
+
+    <div class="mb-3">
+        <label>Tên khách hàng</label>
+        <select asp-for="CustomerId" asp-items="ViewBag.CustomerId" class="form-control"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Loại xe</label>
+        <select id="ddlVehicleType" class="form-control" name="VehicleType" asp-items="ViewBag.VehicleTypes"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Xe thuê</label>
+        <select id="ddlCarId" asp-for="CarId" asp-items="ViewBag.CarId" class="form-control"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Số lượng</label>
+        <input asp-for="Quantity" class="form-control" type="number" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label>Ngày thuê</label>
+        <input asp-for="StartDate" class="form-control" type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="mb-3">
+        <label>Ngày trả</label>
+        <input asp-for="EndDate" class="form-control" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="mb-3">
+        <label>Trạng thái</label>
+        <select asp-for="Status" class="form-control">
+            <option>Active</option>
+            <option>Completed</option>
+            <option>Cancelled</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function loadCars(vehicleType) {
+                var carDropdown = $('#ddlCarId');
+                carDropdown.empty();
+                carDropdown.append($('<option>').val("").text("-- Đang tải --"));
+
+                if (vehicleType) {
+                    $.getJSON('@Url.Action("GetCarsByType")', { vehicleType: vehicleType }, function (data) {
+                        carDropdown.empty();
+                        carDropdown.append($('<option>').val("").text("-- Chọn xe --"));
+                        $.each(data, function (i, car) {
+                            carDropdown.append($('<option>').val(car.carId).text(car.displayText));
+                        });
+                    });
+                } else {
+                    carDropdown.empty();
+                    carDropdown.append($('<option>').val("").text("-- Chọn loại xe trước --"));
+                }
+            }
+
+            $('#ddlVehicleType').change(function () {
+                loadCars($(this).val());
+            });
+
+            var initialType = $('#ddlVehicleType').val();
+            if (initialType) loadCars(initialType);
+        });
+    </script>
+}

@@ -1,0 +1,47 @@
+﻿@model IEnumerable<QuanLyThueXe.Models.Car>
+
+@{
+    ViewBag.Title = "Trang chủ - Thuê xe";
+}
+
+<h2 class="mb-4">Danh sách xe cho thuê</h2>
+
+<!-- Thanh tìm kiếm -->
+<form method="get" asp-action="Index" asp-controller="Home" class="mb-3">
+    <select name="vehicleType" class="form-select w-auto d-inline" asp-items="ViewBag.VehicleTypes"></select>
+    <button type="submit" class="btn btn-primary">Tìm</button>
+</form>
+
+<div class="row">
+    @foreach (var car in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <img src="@(!string.IsNullOrEmpty(car.ImageUrl) ? car.ImageUrl : "/images/no-image.png")"
+                     class="card-img-top"
+                     alt="@car.Brand @car.Model"
+                     style="height:200px; object-fit:cover;" />
+
+                <div class="card-body">
+                    <h5 class="card-title">@car.Brand @car.Model</h5>
+                    <p class="card-text">
+                        Biển số: @car.LicensePlate <br />
+                        Giá thuê: @string.Format("{0:N0} VND/ngày", car.PricePerDay)
+                    </p>
+
+                    @if (car.Status == "Available")
+                    {
+                        <a asp-controller="Reservation" asp-action="Create" asp-route-carId="@car.CarId"
+                           class="btn btn-primary btn-sm">
+                            Thuê ngay
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="btn btn-danger btn-sm disabled">Đã thuê</span>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

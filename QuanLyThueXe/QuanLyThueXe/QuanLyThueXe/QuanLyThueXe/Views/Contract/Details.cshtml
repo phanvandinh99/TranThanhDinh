@@ -1,0 +1,26 @@
+﻿@model QuanLyThueXe.Models.Contract
+
+@{
+    ViewBag.Title = "Chi tiết hợp đồng";
+}
+
+<h2>Chi tiết Hợp đồng #@Model.ContractId</h2>
+
+<div>
+    <h4>Khách hàng</h4>
+    <p>@Model.Customer.FullName</p>
+    <p>@Model.Customer.Phone</p>
+
+    <h4>Xe thuê</h4>
+    <p>@Model.Car.Brand - @Model.Car.Model (@Model.Car.LicensePlate)</p>
+    <img src="@Model.Car.ImageUrl" alt="@Model.Car.Model" style="max-width: 200px;" />
+
+    <h4>Chi tiết hợp đồng</h4>
+    <p>Ngày thuê: @Model.StartDate.ToDateTime(TimeOnly.MinValue).ToString("dd/MM/yyyy")</p>
+    <p>Ngày trả: @Model.EndDate.ToDateTime(TimeOnly.MinValue).ToString("dd/MM/yyyy")</p>
+    <p>Tổng tiền: @Model.TotalAmount.ToString("N0") VNĐ</p>
+    <p>Trạng thái: @Model.Status</p>
+
+    <a asp-action="Edit" asp-route-id="@Model.ContractId" class="btn btn-warning">Sửa</a>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</div>

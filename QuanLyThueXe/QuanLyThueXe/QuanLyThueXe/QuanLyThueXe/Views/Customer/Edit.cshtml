@@ -1,0 +1,64 @@
+﻿@model QuanLyThueXe.Models.Customer
+
+@{
+    ViewBag.Title = "Sửa khách hàng";
+    var activeCar = ViewBag.ActiveCar as QuanLyThueXe.Models.Car;
+}
+
+<h2>Sửa khách hàng</h2>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="CustomerId" type="hidden" />
+
+    <div class="form-group">
+        <label asp-for="FullName"></label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdentityCard"></label>
+        <input asp-for="IdentityCard" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Gender"></label>
+        <select asp-for="Gender" class="form-control">
+            <option value="">-- Chọn giới tính --</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+            <option value="Khác">Khác</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BirthDate">Ngày sinh</label>
+        <input asp-for="BirthDate" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Xe đang thuê hiện tại</label>
+        @if (activeCar != null)
+        {
+            <div class="alert alert-info">@activeCar.Brand - @activeCar.Model (Biển số: @activeCar.LicensePlate)</div>
+        }
+        else
+        {
+            <div class="alert alert-warning">Chưa thuê xe</div>
+        }
+    </div>
+
+    <div class="form-group">
+        <label>Chọn/Thay đổi xe thuê</label>
+        <select asp-for="CarId" asp-items="ViewBag.CarId" class="form-control">
+            <option value="">-- Chọn xe --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
+</form>

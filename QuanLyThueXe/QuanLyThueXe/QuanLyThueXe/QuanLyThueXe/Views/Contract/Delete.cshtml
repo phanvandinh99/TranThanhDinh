@@ -1,0 +1,37 @@
+﻿@model QuanLyThueXe.Models.Contract
+
+@{
+    ViewBag.Title = "Xóa Hợp đồng";
+}
+
+<h2>@ViewBag.Title #@Model.ContractId</h2>
+
+<h4 class="text-danger">Bạn có chắc chắn muốn xóa hợp đồng này không?</h4>
+
+<div class="row">
+    <div class="col-md-6">
+        <h5>Thông tin Hợp đồng</h5>
+        <dl class="row">
+            <dt class="col-4">Khách hàng:</dt>
+            <dd class="col-8">@Model.Customer?.FullName</dd>
+            <dt class="col-4">Xe:</dt>
+            <dd class="col-8">@Model.Car?.Brand @Model.Car?.Model (@Model.Car?.LicensePlate)</dd>
+            <dt class="col-4">Ngày thuê:</dt>
+            <dd class="col-8">@Model.StartDate.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-4">Ngày trả:</dt>
+            <dd class="col-8">@Model.EndDate.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-4">Tổng tiền:</dt>
+            <dd class="col-8">@string.Format("{0:N0} VNĐ", Model.TotalAmount)</dd>
+        </dl>
+    </div>
+    <div class="col-md-6 text-center">
+        <img src="@Model.Car?.ImageUrl ?? " /images/default.png"" class="img-fluid rounded" />
+        <p class="text-muted">@Model.Car?.Brand - @Model.Car?.LicensePlate</p>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="ContractId" />
+    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

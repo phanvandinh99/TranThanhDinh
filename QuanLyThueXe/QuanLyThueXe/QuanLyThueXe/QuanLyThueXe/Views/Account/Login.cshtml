@@ -1,0 +1,31 @@
+﻿@model YourNamespace.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "_LoginLayout";
+}
+
+<h2>Đăng nhập</h2>
+
+<form asp-action="Login" method="post">
+    <div class="form-group">
+        <label asp-for="Username"></label>
+        <input asp-for="Username" class="form-control" />
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Đăng nhập</button>
+</form>
+
+<hr />
+
+<p>
+    Bạn chưa có tài khoản?
+    <a asp-controller="Account" asp-action="Register" class="btn btn-link p-0">Đăng ký ngay</a> |
+    <a asp-controller="Account" asp-action="ForgotPassword" class="btn btn-link p-0">Quên mật khẩu?</a>
+</p>

@@ -1,0 +1,21 @@
+﻿@model QuanLyThueXe.Models.Car
+
+@{
+    ViewData["Title"] = "Xóa xe";
+}
+
+<h2>Bạn có chắc chắn muốn xóa xe này?</h2>
+
+<table class="table table-bordered">
+    <tr><th>Biển số</th><td>@Model.LicensePlate</td></tr>
+    <tr><th>Hãng</th><td>@Model.Brand</td></tr>
+    <tr><th>Model</th><td>@Model.Model</td></tr>
+    <tr><th>Giá/ngày</th><td>@String.Format("{0:N0} VND", Model.PricePerDay)</td></tr>
+    <tr><th>Trạng thái</th><td>@Model.Status</td></tr>
+</table>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="CarId" />
+    <button type="submit" class="btn btn-danger">🗑️ Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">⬅️ Quay lại</a>
+</form>

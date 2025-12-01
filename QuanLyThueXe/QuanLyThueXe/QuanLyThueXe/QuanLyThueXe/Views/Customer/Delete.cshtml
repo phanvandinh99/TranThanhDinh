@@ -1,0 +1,34 @@
+﻿@model QuanLyThueXe.Models.Customer
+
+@{
+    ViewBag.Title = "Xóa khách hàng";
+}
+
+<h2 class="text-danger">Xác nhận xóa khách hàng</h2>
+<hr />
+
+<div class="alert alert-warning">
+    <strong>Bạn có chắc chắn muốn xóa khách hàng này không?</strong><br />
+    Việc này sẽ <u>xóa toàn bộ hợp đồng và đặt xe liên quan</u>.
+</div>
+
+<dl class="dl-horizontal">
+    <dt>Họ tên:</dt>
+    <dd>@Model.FullName</dd>
+
+    <dt>Số điện thoại:</dt>
+    <dd>@Model.Phone</dd>
+
+    <dt>CCCD:</dt>
+    <dd>@Model.IdentityCard</dd>
+
+    <dt>Xe đang thuê:</dt>
+    <dd>
+        @(Model.Car != null ? $"{Model.Car.Brand} - {Model.Car.Model}" : "Chưa thuê xe")
+    </dd>
+</dl>
+
+<form asp-action="DeleteConfirmed" asp-route-id="@Model.CustomerId" method="post">
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

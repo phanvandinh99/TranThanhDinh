@@ -1,0 +1,64 @@
+﻿@model IEnumerable<QuanLyThueXe.Models.Driver>
+
+@{
+    ViewData["Title"] = "Danh sách tài xế";
+}
+
+<h2 class="text-center mb-4">Danh sách tài xế</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary mb-3">+ Thêm tài xế mới</a>
+</p>
+
+<table class="table table-striped table-bordered text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Ảnh</th>
+            <th>Họ tên</th>
+            <th>Giới tính</th>
+            <th>Tuổi</th>
+            <th>SĐT</th>
+            <th>Kinh nghiệm</th>
+            <th>Giá thuê/ngày</th>
+            <th>Loại bằng</th>
+            <th>Trạng thái</th>
+            <th>Mô tả</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(d.ImageUrl))
+                    {
+                        <img src="@d.ImageUrl" width="80" height="80" class="rounded" />
+                    }
+                    else
+                    {
+                        <span>Không có ảnh</span>
+                    }
+                </td>
+                <td>@d.FullName</td>
+                <td>@d.Gender</td>
+                <td>@d.Age</td>
+                <td>@d.Phone</td>
+                <td>@d.ExperienceYears</td>
+                <td>@string.Format("{0:N0} VNĐ", d.PricePerDay)</td>
+                <td>@d.LicenseType</td>
+                <td>
+                    <span class="badge @(d.IsAvailable == true ? "bg-success" : "bg-danger")">
+                        @(d.IsAvailable == true ? "Đang rảnh" : "Đang bận")
+                    </span>
+                </td>
+                <td>@d.Description</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@d.DriverId" class="btn btn-warning btn-sm">Sửa</a>
+                    <a asp-action="Details" asp-route-id="@d.DriverId" class="btn btn-info btn-sm">Xem</a>
+                    <a asp-action="Delete" asp-route-id="@d.DriverId" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

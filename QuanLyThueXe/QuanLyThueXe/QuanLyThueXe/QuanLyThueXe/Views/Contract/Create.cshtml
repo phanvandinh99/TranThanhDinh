@@ -1,0 +1,106 @@
+﻿@model QuanLyThueXe.Models.Contract
+
+@{
+    ViewData["Title"] = "Lập hợp đồng mới";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<a asp-action="Index" class="btn btn-secondary mb-3">&laquo; Quay lại</a>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label for="CustomerId" class="form-label">Khách hàng</label>
+        <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.CustomerId" id="CustomerId">
+            <option value="">-- Chọn khách hàng --</option>
+        </select>
+        <span asp-validation-for="CustomerId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="VehicleType" class="form-label">Loại xe</label>
+        @Html.DropDownList(
+                 "VehicleType",
+                 (SelectList)ViewBag.VehicleTypes,
+                 "-- Chọn loại xe --",
+                 new { @class = "form-select", id = "VehicleType" })
+    </div>
+
+    <div class="mb-3">
+        <label for="CarId" class="form-label">Xe thuê</label>
+        <select asp-for="CarId" class="form-select" id="CarId">
+            <option value="">-- Chọn xe --</option>
+        </select>
+        <span asp-validation-for="CarId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label">Ngày thuê</label>
+        <input asp-for="StartDate" class="form-control" type="date" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EndDate" class="form-label">Ngày trả</label>
+        <input asp-for="EndDate" class="form-control" type="date" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Quantity" class="form-label">Số lượng</label>
+        <input asp-for="Quantity" class="form-control" type="number" min="1" />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Deposit" class="form-label">Tiền cọc (VNĐ)</label>
+        <input asp-for="Deposit" class="form-control" type="number" min="0" />
+        <span asp-validation-for="Deposit" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lập hợp đồng</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        function loadCars(vehicleType, selectedCarId) {
+            if (!vehicleType) {
+                $("#CarId").html('<option value="">-- Chọn xe --</option>');
+                return;
+            }
+
+            $.getJSON('@Url.Action("GetCarsByType", "Contract")', { vehicleType: vehicleType }, function (data) {
+                var $car = $("#CarId");
+                $car.empty();
+                $car.append('<option value="">-- Chọn xe --</option>');
+
+                if (data && data.length > 0) {
+                    $.each(data, function (i, car) {
+                        var carId = car.CarId || "";
+                        var displayText = car.DisplayText || "Xe không xác định";
+                        var selected = carId == selectedCarId ? 'selected' : '';
+                        $car.append('<option value="' + carId + '" ' + selected + '>' + displayText + '</option>');
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // Khi chọn loại xe
+            $("#VehicleType").change(function () {
+                var type = $(this).val();
+                loadCars(type, null);
+            });
+
+            // Nếu page reload có VehicleType đã chọn, load lại xe tương ứng
+            var initialType = $("#VehicleType").val();
+            var initialCarId = '@Model.CarId';
+            if (initialType) {
+                loadCars(initialType, initialCarId);
+            }
+        });
+    </script>
+}

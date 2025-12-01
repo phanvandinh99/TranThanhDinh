@@ -1,0 +1,65 @@
+﻿@model IEnumerable<QuanLyThueXe.Models.Contract>
+
+@{
+    ViewData["Title"] = "Danh sách Hợp đồng";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">+ Lập hợp đồng mới</a>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Mã HĐ</th>
+            <th>Khách hàng</th>
+            <th>Loại xe</th>
+            <th>Xe thuê</th>
+            <th>Biển số</th>
+            <th>Ngày thuê</th>
+            <th>Ngày trả</th>
+            <th>Số lượng</th>
+            <th>Tiền cọc</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Chức năng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ContractId</td>
+                    <td>@item.Customer?.FullName</td>
+                    <td>@item.Car?.VehicleType</td>
+                    <td>@($"{item.Car?.Brand} {item.Car?.Model}")</td>
+                    <td>@item.Car?.LicensePlate</td>
+                    <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Quantity</td>
+                    <td>@(item.Deposit?.ToString("N0") ?? "0") VNĐ</td>
+                    <td>@(item.TotalAmount.ToString("N0") ?? "0") VNĐ</td>
+                    <td>@item.Status</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.ContractId" class="btn btn-info btn-sm">Chi tiết</a>
+                        <a asp-action="Edit" asp-route-id="@item.ContractId" class="btn btn-warning btn-sm">Sửa</a>
+                        <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-danger btn-sm">Xóa</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="12" class="text-center text-danger">Chưa có hợp đồng nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>

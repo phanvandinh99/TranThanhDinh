@@ -1,0 +1,63 @@
+﻿@model IEnumerable<QuanLyThueXe.Models.Contract>
+
+@{
+    ViewData["Title"] = "Báo cáo Tổng quan Hợp đồng";
+}
+
+<div class="container mt-4">
+    <h2>Báo cáo Tổng quan Hợp đồng</h2>
+
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <div class="alert alert-success">
+            @ViewBag.SuccessMessage
+        </div>
+    }
+
+    <div class="d-flex justify-content-between mb-3">
+        <h4>Tổng số Hợp đồng: @Model.Count()</h4>
+
+        <a href="/Report/ExportContractsCsv" class="btn btn-success">
+            <i class="fa fa-file-excel"></i> Tải về Excel (CSV)
+        </a>
+    </div>
+
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Mã HĐ</th>
+                <th>Khách hàng</th>
+                <th>Biển số</th>
+                <th>Ngày thuê</th>
+                <th>Ngày trả</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ContractId</td>
+                        <td>@item.Customer?.FullName</td>
+                        <td>@item.Car?.LicensePlate</td>
+                        <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                        <td>@string.Format("{0:N0} VNĐ", item.TotalAmount)</td>
+                        <td>@item.Status</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        Không có dữ liệu Hợp đồng để báo cáo.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

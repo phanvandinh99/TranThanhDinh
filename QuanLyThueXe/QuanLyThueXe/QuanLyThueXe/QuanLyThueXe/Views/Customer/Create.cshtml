@@ -1,0 +1,67 @@
+﻿@model QuanLyThueXe.Models.Customer
+
+@{
+    ViewBag.Title = "Thêm khách hàng";
+}
+
+<h2>Thêm khách hàng mới</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="FullName"></label>
+        <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdentityCard"></label>
+        <input asp-for="IdentityCard" class="form-control" placeholder="Nhập CCCD/CMND" />
+        <span asp-validation-for="IdentityCard" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" class="form-control" placeholder="Nhập số điện thoại" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" placeholder="Nhập email (nếu có)" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Address"></label>
+        <input asp-for="Address" class="form-control" placeholder="Nhập địa chỉ" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Giới tính</label>
+        <select asp-for="Gender" class="form-control">
+            <option value="">-- Chọn giới tính --</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+            <option value="Khác">Khác</option>
+        </select>
+        <span asp-validation-for="Gender" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BirthDate">Ngày sinh</label>
+        <input asp-for="BirthDate" type="date" class="form-control" />
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Xe muốn thuê</label>
+        <select asp-for="CarId" asp-items="ViewBag.CarId" class="form-control">
+            <option value="">-- Chọn xe --</option>
+        </select>
+        <span asp-validation-for="CarId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Lưu khách hàng</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại</a>
+</form>
