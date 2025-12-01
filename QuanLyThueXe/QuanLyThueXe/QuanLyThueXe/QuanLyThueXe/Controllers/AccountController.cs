@@ -31,13 +31,51 @@ namespace QuanLyThueXe.Controllers
 
             var user = _db.Users.FirstOrDefault(u => u.Username == username);
 
-            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            if (user != null)
             {
-                HttpContext.Session.SetInt32("UserId", user.UserId);
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetString("Role", user.Role ?? "User");
+                bool isPasswordValid = false;
 
-                return RedirectToAction("Index", "Home");
+                // Kiểm tra xem password hash có phải là BCrypt hash không
+                // BCrypt hash thường bắt đầu với $2a$, $2b$, hoặc $2y$
+                bool isBcryptHash = user.PasswordHash != null && 
+                                    (user.PasswordHash.StartsWith("$2a$") || 
+                                     user.PasswordHash.StartsWith("$2b$") || 
+                                     user.PasswordHash.StartsWith("$2y$"));
+
+                if (isBcryptHash)
+                {
+                    // Password đã được hash bằng BCrypt
+                    try
+                    {
+                        isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+                    }
+                    catch
+                    {
+                        // Nếu có lỗi khi verify (có thể hash không hợp lệ), thử so sánh plain text
+                        isPasswordValid = user.PasswordHash == password;
+                    }
+                }
+                else
+                {
+                    // Password cũ là plain text - so sánh trực tiếp
+                    isPasswordValid = user.PasswordHash == password;
+                }
+
+                if (isPasswordValid)
+                {
+                    // Nếu password là plain text, tự động migrate sang BCrypt
+                    if (!isBcryptHash)
+                    {
+                        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+                        _db.SaveChanges();
+                    }
+
+                    HttpContext.Session.SetInt32("UserId", user.UserId);
+                    HttpContext.Session.SetString("Username", user.Username);
+                    HttpContext.Session.SetString("Role", user.Role ?? "User");
+
+                    return RedirectToAction("Index", "Home");
+                }
             }
 
             ModelState.AddModelError("", "Sai tên đăng nhập hoặc mật khẩu!");
