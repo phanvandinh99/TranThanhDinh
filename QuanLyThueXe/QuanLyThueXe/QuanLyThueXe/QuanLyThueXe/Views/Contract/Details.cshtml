@@ -13,7 +13,7 @@
 
     <h4>Xe thuê</h4>
     <p>@Model.Car.Brand - @Model.Car.Model (@Model.Car.LicensePlate)</p>
-    <img src="@Model.Car.ImageUrl" alt="@Model.Car.Model" style="max-width: 200px;" />
+    <img src="@(!string.IsNullOrEmpty(Model.Car.ImageUrl) ? Model.Car.ImageUrl : "/images/cars/car404.jpg")" alt="@Model.Car.Model" style="max-width: 200px;" />
 
     <h4>Chi tiết hợp đồng</h4>
     <p>Ngày thuê: @Model.StartDate.ToDateTime(TimeOnly.MinValue).ToString("dd/MM/yyyy")</p>

@@ -58,11 +58,35 @@ namespace QuanLyThueXe.Controllers
             if (role != "Admin" && role != "Manager")
                 return RedirectToAction("Index", "Home");
 
+            // Validation bổ sung
+            if (string.IsNullOrWhiteSpace(car.LicensePlate))
+                ModelState.AddModelError("LicensePlate", "Biển số xe không được để trống.");
+
+            if (_db.Cars.Any(c => c.LicensePlate == car.LicensePlate))
+                ModelState.AddModelError("LicensePlate", "Biển số xe đã tồn tại.");
+
+            if (car.PricePerDay <= 0)
+                ModelState.AddModelError("PricePerDay", "Giá thuê phải lớn hơn 0.");
+
+            if (string.IsNullOrWhiteSpace(car.VehicleType))
+                car.VehicleType = "Car";
+
+            if (string.IsNullOrWhiteSpace(car.Status))
+                car.Status = "Available";
+
             if (ModelState.IsValid)
             {
-                _db.Cars.Add(car);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    _db.Cars.Add(car);
+                    _db.SaveChanges();
+                    TempData["SuccessMessage"] = $"Đã thêm xe {car.LicensePlate} thành công.";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Lỗi khi thêm xe: {ex.Message}");
+                }
             }
 
             LoadImageList(car.ImageUrl);
@@ -98,22 +122,46 @@ namespace QuanLyThueXe.Controllers
             if (role != "Admin" && role != "Manager")
                 return RedirectToAction("Index", "Home");
 
+            // Validation bổ sung
+            if (string.IsNullOrWhiteSpace(car.LicensePlate))
+                ModelState.AddModelError("LicensePlate", "Biển số xe không được để trống.");
+
+            // Kiểm tra biển số trùng (trừ chính nó)
+            if (_db.Cars.Any(c => c.LicensePlate == car.LicensePlate && c.CarId != car.CarId))
+                ModelState.AddModelError("LicensePlate", "Biển số xe đã tồn tại.");
+
+            if (car.PricePerDay <= 0)
+                ModelState.AddModelError("PricePerDay", "Giá thuê phải lớn hơn 0.");
+
             if (ModelState.IsValid)
             {
                 var originalCar = _db.Cars.Find(car.CarId);
                 if (originalCar != null)
                 {
-                    originalCar.LicensePlate = car.LicensePlate;
-                    originalCar.Brand = car.Brand;
-                    originalCar.Model = car.Model;
-                    originalCar.PricePerDay = car.PricePerDay;
-                    originalCar.Status = car.Status;
-                    originalCar.ImageUrl = car.ImageUrl;
+                    try
+                    {
+                        originalCar.LicensePlate = car.LicensePlate;
+                        originalCar.Brand = car.Brand;
+                        originalCar.Model = car.Model;
+                        originalCar.PricePerDay = car.PricePerDay;
+                        originalCar.Status = car.Status;
+                        originalCar.ImageUrl = car.ImageUrl;
+                        originalCar.VehicleType = car.VehicleType;
 
-                    _db.SaveChanges();
+                        _db.SaveChanges();
+                        TempData["SuccessMessage"] = $"Đã cập nhật xe {car.LicensePlate} thành công.";
+                        return RedirectToAction("Index");
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", $"Lỗi khi cập nhật xe: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy xe cần cập nhật.";
                     return RedirectToAction("Index");
                 }
-                return NotFound();
             }
 
             ViewBag.StatusList = new SelectList(new[] { "Available", "Rented" }, car.Status);
@@ -147,19 +195,45 @@ namespace QuanLyThueXe.Controllers
                 return RedirectToAction("Index", "Home");
 
             var car = _db.Cars.Find(id);
-            if (car == null) return RedirectToAction("Index");
+            if (car == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy xe cần xóa.";
+                return RedirectToAction("Index");
+            }
 
-            // Xóa liên kết với các reservation và contract
-            var reservations = _db.Reservations.Where(r => r.CarId == id).ToList();
-            _db.Reservations.RemoveRange(reservations);
+            try
+            {
+                // Kiểm tra xe có đang được thuê không
+                var activeContracts = _db.Contracts
+                    .Where(c => c.CarId == id && c.Status == "Active")
+                    .Any();
 
-            var contracts = _db.Contracts.Where(c => c.CarId == id).ToList();
-            _db.Contracts.RemoveRange(contracts);
+                if (activeContracts)
+                {
+                    TempData["ErrorMessage"] = $"Không thể xóa xe {car.LicensePlate} vì đang có hợp đồng đang hoạt động.";
+                    return RedirectToAction("Index");
+                }
 
-            _db.Cars.Remove(car);
-            _db.SaveChanges();
+                // Xóa liên kết với các reservation và contract
+                var reservations = _db.Reservations.Where(r => r.CarId == id).ToList();
+                if (reservations.Any())
+                    _db.Reservations.RemoveRange(reservations);
 
-            TempData["SuccessMessage"] = $"Đã xóa xe {car.LicensePlate} thành công.";
+                var contracts = _db.Contracts.Where(c => c.CarId == id).ToList();
+                if (contracts.Any())
+                    _db.Contracts.RemoveRange(contracts);
+
+                _db.Cars.Remove(car);
+                _db.SaveChanges();
+
+                TempData["SuccessMessage"] = $"Đã xóa xe {car.LicensePlate} thành công.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi khi xóa xe: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+
             return RedirectToAction("Index");
         }
 

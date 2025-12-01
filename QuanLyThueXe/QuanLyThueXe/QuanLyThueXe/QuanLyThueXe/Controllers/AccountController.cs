@@ -23,13 +23,19 @@ namespace QuanLyThueXe.Controllers
         [HttpPost]
         public IActionResult Login(string username, string password)
         {
-            var user = _db.Users.FirstOrDefault(u => u.Username == username && u.PasswordHash == password);
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin!");
+                return View();
+            }
 
-            if (user != null)
+            var user = _db.Users.FirstOrDefault(u => u.Username == username);
+
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
                 HttpContext.Session.SetInt32("UserId", user.UserId);
                 HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetString("Role", user.Role);
+                HttpContext.Session.SetString("Role", user.Role ?? "User");
 
                 return RedirectToAction("Index", "Home");
             }
@@ -47,22 +53,51 @@ namespace QuanLyThueXe.Controllers
         [HttpPost]
         public IActionResult Register(string username, string password, string fullname, string email)
         {
+            // Validation
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || 
+                string.IsNullOrWhiteSpace(fullname) || string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin!");
+                return View();
+            }
+
+            if (username.Length < 3)
+            {
+                ModelState.AddModelError("", "Tên đăng nhập phải có ít nhất 3 ký tự!");
+                return View();
+            }
+
+            if (password.Length < 6)
+            {
+                ModelState.AddModelError("", "Mật khẩu phải có ít nhất 6 ký tự!");
+                return View();
+            }
+
             if (_db.Users.Any(u => u.Username == username))
             {
                 ModelState.AddModelError("", "Tên đăng nhập đã tồn tại!");
                 return View();
             }
 
-            if (!email.EndsWith("@email.com"))
+            if (_db.Users.Any(u => u.Email == email))
             {
-                ModelState.AddModelError("", "Email phải có dạng ...@email.com!");
+                ModelState.AddModelError("", "Email đã được sử dụng!");
                 return View();
             }
+
+            if (!email.Contains("@") || !email.Contains("."))
+            {
+                ModelState.AddModelError("", "Email không hợp lệ!");
+                return View();
+            }
+
+            // Hash password
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
             var newUser = new User
             {
                 Username = username,
-                PasswordHash = password,
+                PasswordHash = hashedPassword,
                 FullName = fullname,
                 Role = "User",
                 Email = email
@@ -71,6 +106,7 @@ namespace QuanLyThueXe.Controllers
             _db.Users.Add(newUser);
             _db.SaveChanges();
 
+            TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
             return RedirectToAction("Login");
         }
 
@@ -131,7 +167,15 @@ namespace QuanLyThueXe.Controllers
             if (user == null)
                 return RedirectToAction("ForgotPassword");
 
-            user.PasswordHash = newPassword;
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+            {
+                ModelState.AddModelError("", "Mật khẩu phải có ít nhất 6 ký tự.");
+                TempData["EmailToReset"] = email;
+                return View();
+            }
+
+            // Hash password mới
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
             _db.SaveChanges();
 
             TempData["Message"] = "Đặt lại mật khẩu thành công!";

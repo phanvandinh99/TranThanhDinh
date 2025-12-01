@@ -158,6 +158,13 @@ namespace QuanLyThueXe.Controllers
                 return View(contract);
             }
 
+            var existingContract = _db.Contracts.Find(contract.ContractId);
+            if (existingContract == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy hợp đồng.";
+                return RedirectToAction("Index");
+            }
+
             var car = _db.Cars.Find(contract.CarId);
             if (car == null)
             {
@@ -166,12 +173,39 @@ namespace QuanLyThueXe.Controllers
                 return View(contract);
             }
 
+            // Nếu đổi xe, kiểm tra xe mới có sẵn không
+            if (existingContract.CarId != contract.CarId && car.Status != "Available")
+            {
+                ModelState.AddModelError("CarId", "Xe mới không có sẵn.");
+                LoadDropdowns(contract);
+                return View(contract);
+            }
+
             int rentalDays = (contract.EndDate.ToDateTime(TimeOnly.MinValue) - contract.StartDate.ToDateTime(TimeOnly.MinValue)).Days + 1;
             if (rentalDays <= 0) rentalDays = 1;
 
-            contract.TotalAmount = (car.PricePerDay ?? 0) * rentalDays * contract.Quantity;
+            // Cập nhật thông tin hợp đồng
+            existingContract.CustomerId = contract.CustomerId;
+            existingContract.CarId = contract.CarId;
+            existingContract.StartDate = contract.StartDate;
+            existingContract.EndDate = contract.EndDate;
+            existingContract.Quantity = contract.Quantity;
+            existingContract.Deposit = contract.Deposit;
+            existingContract.TotalAmount = (car.PricePerDay ?? 0) * rentalDays * contract.Quantity;
+            existingContract.Status = contract.Status;
 
-            _db.Contracts.Update(contract);
+            // Nếu đổi xe, cập nhật trạng thái xe cũ và mới
+            if (existingContract.CarId != contract.CarId)
+            {
+                var oldCar = _db.Cars.Find(existingContract.CarId);
+                if (oldCar != null && !_db.Contracts.Any(c => c.CarId == oldCar.CarId && c.ContractId != contract.ContractId && c.Status == "Active"))
+                {
+                    oldCar.Status = "Available";
+                }
+                car.Status = "Rented";
+            }
+
+            _db.Contracts.Update(existingContract);
             _db.SaveChanges();
 
             TempData["SuccessMessage"] = "Hợp đồng đã được cập nhật!";
@@ -302,13 +336,24 @@ namespace QuanLyThueXe.Controllers
         // ===================================
         private string GetCarImagePath(Car car)
         {
-            if (car == null || string.IsNullOrEmpty(car.VehicleType) || string.IsNullOrEmpty(car.ImageUrl))
-                return "/images/default.png";
+            if (car == null)
+                return "/images/cars/car404.jpg";
 
-            string folder = car.VehicleType == "Car" ? "cars" :
-                            car.VehicleType == "Motorbike" ? "motobikes" : "default";
+            // Nếu có ImageUrl, sử dụng nó
+            if (!string.IsNullOrEmpty(car.ImageUrl))
+            {
+                // Nếu ImageUrl đã là đường dẫn đầy đủ, dùng trực tiếp
+                if (car.ImageUrl.StartsWith("/"))
+                    return car.ImageUrl;
+                
+                // Nếu không, xây dựng đường dẫn dựa trên VehicleType
+                string folder = car.VehicleType == "Car" ? "cars" :
+                                car.VehicleType == "Motorbike" ? "motobikes" : "cars";
+                return $"/images/{folder}/{car.ImageUrl}";
+            }
 
-            return $"/images/{folder}/{car.ImageUrl}";
+            // Mặc định trả về car404.jpg
+            return "/images/cars/car404.jpg";
         }
 
     }
