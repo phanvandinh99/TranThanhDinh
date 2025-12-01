@@ -171,8 +171,69 @@ INSERT INTO Drivers (FullName, Gender, Age, Phone, ExperienceYears, PricePerDay,
 (N'Phan Thị K', N'Nữ', 30, '0906012345', 5, 500000, '/images/drivers/driver10.jpg', N'Tài xế dịch vụ gia đình và sự kiện.');
 GO
 
+-- Bảng Notifications
+CREATE TABLE Notifications (
+    NotificationId INT PRIMARY KEY IDENTITY(1,1),
+    Message NVARCHAR(510) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    IsRead BIT DEFAULT 0,
+    ReservationId INT NULL,
+    CONSTRAINT FK_Notifications_Reservations FOREIGN KEY (ReservationId) REFERENCES Reservations(ReservationId)
+);
+GO
+
+-- Trigger tự động tạo thông báo khi có Reservation mới (nếu cần)
+-- Trigger này sẽ tự động tạo thông báo khi có đặt xe mới
+IF NOT EXISTS (SELECT * FROM sys.triggers WHERE name = 'trg_CreateNotification')
+BEGIN
+    EXEC('
+    CREATE TRIGGER trg_CreateNotification
+    ON Reservations
+    AFTER INSERT
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        INSERT INTO Notifications (Message, ReservationId, CreatedAt, IsRead)
+        SELECT 
+            N''Đặt xe mới: Xe '' + c.Brand + '' '' + c.Model + '' - Khách hàng: '' + cu.FullName,
+            i.ReservationId,
+            GETDATE(),
+            0
+        FROM inserted i
+        INNER JOIN Cars c ON i.CarId = c.CarId
+        INNER JOIN Customers cu ON i.CustomerId = cu.CustomerId;
+    END
+    ');
+    PRINT 'Trigger trg_CreateNotification đã được tạo thành công!';
+END
+ELSE
+BEGIN
+    PRINT 'Trigger trg_CreateNotification đã tồn tại.';
+END
+GO
+
+-- Thêm dữ liệu mẫu cho Notifications (nếu có Reservations)
+-- INSERT INTO Notifications (Message, ReservationId, CreatedAt, IsRead)
+-- SELECT 
+--     N'Đặt xe mới đã được tạo',
+--     ReservationId,
+--     ReservationDate,
+--     0
+-- FROM Reservations
+-- WHERE ReservationId IN (SELECT TOP 5 ReservationId FROM Reservations);
+-- GO
+
 -- Kiểm tra dữ liệu (tuỳ chọn)
+PRINT '=== KIỂM TRA DỮ LIỆU ===';
 SELECT UserId, Username, Role FROM Users;
-SELECT CarId, LicensePlate, CarName, VehicleType FROM Cars;
-SELECT * FROM Customers;
-SELECT * FROM Drivers;
+SELECT CarId, LicensePlate, CarName, VehicleType, Status FROM Cars;
+SELECT COUNT(*) AS TotalCustomers FROM Customers;
+SELECT COUNT(*) AS TotalDrivers FROM Drivers;
+SELECT COUNT(*) AS TotalReservations FROM Reservations;
+SELECT COUNT(*) AS TotalContracts FROM Contracts;
+SELECT COUNT(*) AS TotalNotifications FROM Notifications;
+GO
+
+PRINT '=== HOÀN TẤT TẠO DATABASE ===';
+PRINT 'Database CarRentalDB đã được tạo thành công với tất cả các bảng!';
+GO
