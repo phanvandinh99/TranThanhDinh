@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/cars/car404.jpg")" 
+        <img src="@ImageHelper.GetCarImageUrl(Model)" 
              alt="@Model.Brand @Model.Model" 
              class="img-fluid rounded mb-3" />
     </div>
@@ -17,7 +17,7 @@
             <tr><th>Biển số</th><td>@Model.LicensePlate</td></tr>
             <tr><th>Hãng</th><td>@Model.Brand</td></tr>
             <tr><th>Model</th><td>@Model.Model</td></tr>
-            <tr><th>Giá/ngày</th><td>@String.Format("{0:N0} VND", Model.PricePerDay)</td></tr>
+            <tr><th>Giá/ngày</th><td>@PriceHelper.FormatPrice(Model.PricePerDay)</td></tr>
             <tr><th>Trạng thái</th><td>@Model.Status</td></tr>
         </table>
     </div>

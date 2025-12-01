@@ -1,0 +1,42 @@
+@model QuanLyThueXe.Models.Car
+@using QuanLyThueXe.Helpers
+
+@{
+    var imageUrl = ImageHelper.GetCarImageUrl(Model);
+    var priceFormatted = PriceHelper.FormatPrice(Model.PricePerDay);
+}
+
+<div class="col-md-4 mb-4">
+    <div class="card shadow-sm">
+        <img src="@imageUrl"
+             class="card-img-top"
+             alt="@Model.Brand @Model.Model"
+             style="height:200px; object-fit:cover;" />
+
+        <div class="card-body">
+            <h5 class="card-title">@Model.Brand @Model.Model</h5>
+            <p class="card-text">
+                <strong>Biển số:</strong> @Model.LicensePlate <br />
+                <strong>Giá thuê:</strong> @priceFormatted/ngày <br />
+                <strong>Loại:</strong> @Model.VehicleType
+            </p>
+
+            @if (Model.Status == "Available")
+            {
+                <a asp-controller="Reservation" asp-action="Create" asp-route-carId="@Model.CarId"
+                   class="btn btn-primary btn-sm">
+                    Thuê ngay
+                </a>
+                <a asp-controller="Car" asp-action="Details" asp-route-id="@Model.CarId"
+                   class="btn btn-outline-secondary btn-sm">
+                    Chi tiết
+                </a>
+            }
+            else
+            {
+                <span class="btn btn-danger btn-sm disabled">Đã thuê</span>
+            }
+        </div>
+    </div>
+</div>
+

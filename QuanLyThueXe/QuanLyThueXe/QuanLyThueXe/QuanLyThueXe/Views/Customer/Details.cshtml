@@ -23,7 +23,7 @@
     <dd class="col-sm-9">@Model.Gender</dd>
 
     <dt class="col-sm-3">Ngày sinh</dt>
-    <dd class="col-sm-9">@Model.BirthDate?.ToString("dd/MM/yyyy")</dd>
+    <dd class="col-sm-9">@DateHelper.FormatDateOnly(Model.BirthDate)</dd>
 </dl>
 
 <h4>Thông tin hợp đồng (nếu có)</h4>
@@ -32,9 +32,14 @@
     <ul>
         <li>Hợp đồng: @activeContract.ContractId</li>
         <li>Xe: @activeContract.Car.Brand - @activeContract.Car.Model</li>
-        <li>Ngày thuê: @activeContract.StartDate.ToString("dd/MM/yyyy")</li>
-        <li>Ngày trả: @activeContract.EndDate.ToString("dd/MM/yyyy")</li>
-        <li>Tổng: @String.Format("{0:N0}", activeContract.TotalAmount) VND</li>
+        <li>Ngày thuê: @DateHelper.FormatDateOnly(activeContract.StartDate)</li>
+        <li>Ngày trả: @DateHelper.FormatDateOnly(activeContract.EndDate)</li>
+        <li>Số ngày thuê: @DateHelper.CalculateDays(activeContract.StartDate, activeContract.EndDate) ngày</li>
+        <li>Tổng: @PriceHelper.FormatPrice(activeContract.TotalAmount)</li>
+        @if (DateHelper.IsContractExpiringSoon(activeContract.EndDate))
+        {
+            <li class="text-warning">⚠️ Hợp đồng sắp hết hạn!</li>
+        }
     </ul>
 }
 else

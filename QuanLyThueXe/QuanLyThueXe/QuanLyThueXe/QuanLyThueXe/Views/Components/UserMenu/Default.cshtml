@@ -1,0 +1,36 @@
+@if (ViewBag.IsLoggedIn)
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+           data-bs-toggle="dropdown" aria-expanded="false">
+            👤 @ViewBag.Username (@ViewBag.Role)
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+            @if (ViewBag.IsAuthorized)
+            {
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" asp-controller="Contract" asp-action="Index">Hợp đồng thuê</a></li>
+                <li><a class="dropdown-item" asp-controller="Reservation" asp-action="Index">Đặt xe</a></li>
+            }
+            @if (ViewBag.IsAdmin)
+            {
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" asp-controller="Car" asp-action="Index">Quản lý xe</a></li>
+                <li><a class="dropdown-item" asp-controller="Customer" asp-action="Index">Quản lý khách hàng</a></li>
+            }
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="Logout">Đăng xuất</a></li>
+        </ul>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Account" asp-action="Register">Đăng ký</a>
+    </li>
+}
+

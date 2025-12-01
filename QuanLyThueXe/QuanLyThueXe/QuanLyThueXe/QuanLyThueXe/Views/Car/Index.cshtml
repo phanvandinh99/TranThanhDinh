@@ -28,7 +28,7 @@
                 <td>@car.LicensePlate</td>
                 <td>@car.Brand</td>
                 <td>@car.Model</td>
-                <td>@string.Format("{0:N0} VND", car.PricePerDay)</td>
+                <td>@PriceHelper.FormatPrice(car.PricePerDay)</td>
                 <td>@car.Status</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@car.CarId">✏️ Sửa</a> |

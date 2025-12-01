@@ -13,13 +13,20 @@
 
     <h4>Xe thuê</h4>
     <p>@Model.Car.Brand - @Model.Car.Model (@Model.Car.LicensePlate)</p>
-    <img src="@(!string.IsNullOrEmpty(Model.Car.ImageUrl) ? Model.Car.ImageUrl : "/images/cars/car404.jpg")" alt="@Model.Car.Model" style="max-width: 200px;" />
+    <img src="@ImageHelper.GetCarImageUrl(Model.Car)" alt="@Model.Car.Model" style="max-width: 200px;" />
 
     <h4>Chi tiết hợp đồng</h4>
-    <p>Ngày thuê: @Model.StartDate.ToDateTime(TimeOnly.MinValue).ToString("dd/MM/yyyy")</p>
-    <p>Ngày trả: @Model.EndDate.ToDateTime(TimeOnly.MinValue).ToString("dd/MM/yyyy")</p>
-    <p>Tổng tiền: @Model.TotalAmount.ToString("N0") VNĐ</p>
-    <p>Trạng thái: @Model.Status</p>
+    <p>Ngày thuê: @DateHelper.FormatDateOnly(Model.StartDate)</p>
+    <p>Ngày trả: @DateHelper.FormatDateOnly(Model.EndDate)</p>
+    <p>Số ngày thuê: @DateHelper.CalculateDays(Model.StartDate, Model.EndDate) ngày</p>
+    <p>Tiền cọc: @PriceHelper.FormatPrice(Model.Deposit)</p>
+    <p>Tổng tiền: @PriceHelper.FormatPrice(Model.TotalAmount)</p>
+    <p>Số tiền còn lại: @PriceHelper.FormatPrice(PriceHelper.CalculateRemainingAmount(Model.TotalAmount, Model.Deposit))</p>
+    <p>Trạng thái: 
+        <span class="badge @(Model.Status == "Active" ? "bg-success" : Model.Status == "Completed" ? "bg-secondary" : "bg-warning")">
+            @Model.Status
+        </span>
+    </p>
 
     <a asp-action="Edit" asp-route-id="@Model.ContractId" class="btn btn-warning">Sửa</a>
     <a asp-action="Index" class="btn btn-secondary">Quay lại</a>

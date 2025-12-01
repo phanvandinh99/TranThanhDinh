@@ -1,0 +1,42 @@
+@model IEnumerable<QuanLyThueXe.Models.Notification>
+@using QuanLyThueXe.Helpers
+
+@if (Model.Any())
+{
+    <div class="dropdown">
+        <button class="btn btn-outline-light dropdown-toggle position-relative" type="button" 
+                id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            🔔 Thông báo
+            @if (ViewBag.UnreadCount > 0)
+            {
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    @ViewBag.UnreadCount
+                </span>
+            }
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="max-width: 350px;">
+            @foreach (var notification in Model)
+            {
+                <li>
+                    <div class="dropdown-item-text">
+                        <small class="text-muted">@DateHelper.FormatDateTime(notification.CreatedAt)</small>
+                        <p class="mb-0">@notification.Message</p>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+            }
+            <li>
+                <a class="dropdown-item text-center" asp-controller="Notification" asp-action="Index">
+                    Xem tất cả
+                </a>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <button class="btn btn-outline-light" type="button" disabled>
+        🔔 Thông báo
+    </button>
+}
+

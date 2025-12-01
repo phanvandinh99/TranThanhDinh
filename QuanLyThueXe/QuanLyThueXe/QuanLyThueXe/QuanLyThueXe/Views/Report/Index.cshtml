@@ -43,9 +43,9 @@
                         <td>@item.ContractId</td>
                         <td>@item.Customer?.FullName</td>
                         <td>@item.Car?.LicensePlate</td>
-                        <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
-                        <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
-                        <td>@string.Format("{0:N0} VNĐ", item.TotalAmount)</td>
+                        <td>@DateHelper.FormatDateOnly(item.StartDate)</td>
+                        <td>@DateHelper.FormatDateOnly(item.EndDate)</td>
+                        <td>@PriceHelper.FormatPrice(item.TotalAmount)</td>
                         <td>@item.Status</td>
                     </tr>
                 }

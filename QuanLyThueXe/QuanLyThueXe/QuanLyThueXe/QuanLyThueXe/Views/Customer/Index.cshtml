@@ -31,9 +31,9 @@
                 <td>@item.Email</td>
                 <td>@item.Address</td>
                 <td>@item.Gender</td>
-                <td>@(item.BirthDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                <td>@DateHelper.FormatDate(item.BirthDate)</td>
                 <td>@item.CarModel</td>
-                <td>@(item.EndDate.HasValue ? item.EndDate.Value.ToString("dd/MM/yyyy") : "-")</td>
+                <td>@DateHelper.FormatDate(item.EndDate)</td>
                 <td class="text-center">
                     <a asp-action="Details" asp-route-id="@item.CustomerId" class="btn btn-primary btn-sm">Chi tiết</a>
                     <a asp-action="Edit" asp-route-id="@item.CustomerId" class="btn btn-warning btn-sm">Sửa</a>

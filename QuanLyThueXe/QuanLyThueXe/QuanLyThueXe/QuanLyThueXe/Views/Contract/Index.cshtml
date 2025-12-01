@@ -41,11 +41,11 @@
                     <td>@item.Car?.VehicleType</td>
                     <td>@($"{item.Car?.Brand} {item.Car?.Model}")</td>
                     <td>@item.Car?.LicensePlate</td>
-                    <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
-                    <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                    <td>@DateHelper.FormatDateOnly(item.StartDate)</td>
+                    <td>@DateHelper.FormatDateOnly(item.EndDate)</td>
                     <td>@item.Quantity</td>
-                    <td>@(item.Deposit?.ToString("N0") ?? "0") VNĐ</td>
-                    <td>@(item.TotalAmount.ToString("N0") ?? "0") VNĐ</td>
+                    <td>@PriceHelper.FormatPrice(item.Deposit)</td>
+                    <td>@PriceHelper.FormatPrice(item.TotalAmount)</td>
                     <td>@item.Status</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@item.ContractId" class="btn btn-info btn-sm">Chi tiết</a>

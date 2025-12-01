@@ -17,15 +17,15 @@
             <dt class="col-4">Xe:</dt>
             <dd class="col-8">@Model.Car?.Brand @Model.Car?.Model (@Model.Car?.LicensePlate)</dd>
             <dt class="col-4">Ngày thuê:</dt>
-            <dd class="col-8">@Model.StartDate.ToString("dd/MM/yyyy")</dd>
+            <dd class="col-8">@DateHelper.FormatDateOnly(Model.StartDate)</dd>
             <dt class="col-4">Ngày trả:</dt>
-            <dd class="col-8">@Model.EndDate.ToString("dd/MM/yyyy")</dd>
+            <dd class="col-8">@DateHelper.FormatDateOnly(Model.EndDate)</dd>
             <dt class="col-4">Tổng tiền:</dt>
-            <dd class="col-8">@string.Format("{0:N0} VNĐ", Model.TotalAmount)</dd>
+            <dd class="col-8">@PriceHelper.FormatPrice(Model.TotalAmount)</dd>
         </dl>
     </div>
     <div class="col-md-6 text-center">
-        <img src="@(!string.IsNullOrEmpty(Model.Car?.ImageUrl) ? Model.Car.ImageUrl : "/images/cars/car404.jpg")" class="img-fluid rounded" />
+        <img src="@ImageHelper.GetCarImageUrl(Model.Car)" class="img-fluid rounded" />
         <p class="text-muted">@Model.Car?.Brand - @Model.Car?.LicensePlate</p>
     </div>
 </div>
