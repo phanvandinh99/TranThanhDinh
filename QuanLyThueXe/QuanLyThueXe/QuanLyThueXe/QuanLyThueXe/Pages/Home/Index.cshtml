@@ -1,0 +1,39 @@
+@page "/HomeRazor"
+@* Custom route để tránh conflict với MVC *@
+@model QuanLyThueXe.Pages.Home.IndexModel
+@{
+    ViewData["Title"] = "Trang chủ - Thuê xe (Razor Pages)";
+}
+
+<h2 class="mb-4">Danh sách xe cho thuê <small class="text-muted">(Razor Pages)</small></h2>
+
+<!-- Thanh tìm kiếm -->
+<form method="get" class="mb-3">
+    <select name="vehicleType" class="form-select w-auto d-inline" asp-items="Model.VehicleTypes"></select>
+    <button type="submit" class="btn btn-primary">Tìm</button>
+</form>
+
+<div class="row">
+    @if (Model.Cars.Any())
+    {
+        @foreach (var car in Model.Cars)
+        {
+            @* Sử dụng View Component *@
+            @await Component.InvokeAsync("CarCard", car)
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <p class="text-muted">Không tìm thấy xe nào.</p>
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    <div class="alert alert-info">
+        <strong>📝 Lưu ý:</strong> Đây là trang sử dụng <strong>Razor Pages</strong> với file <code>Index.cshtml.cs</code> (PageModel).
+        <br />
+        Trang MVC gốc vẫn hoạt động tại: <a asp-controller="Home" asp-action="Index">/Home/Index</a>
+    </div>
+</div>

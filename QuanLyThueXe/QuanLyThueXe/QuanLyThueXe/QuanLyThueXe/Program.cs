@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages(); // Thêm hỗ trợ Razor Pages
 
 // Thêm DbContext
 builder.Services.AddDbContext<CarRentalDbContext>(options =>
@@ -26,6 +27,10 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
+// Map Razor Pages
+app.MapRazorPages();
+
+// Map MVC Controllers
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

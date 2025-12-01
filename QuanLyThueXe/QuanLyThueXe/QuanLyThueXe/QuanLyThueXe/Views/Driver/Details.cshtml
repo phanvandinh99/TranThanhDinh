@@ -17,8 +17,10 @@
         <p><strong>Giới tính:</strong> @Model.Gender</p>
         <p><strong>Tuổi:</strong> @Model.Age</p>
         <p><strong>Điện thoại:</strong> @Model.Phone</p>
+
         <p><strong>Giá thuê/ngày:</strong> @PriceHelper.FormatPrice(Model.PricePerDay)</p>
         <p><strong>Giá thuê/ngày:</strong> @string.Format("{0:N0} VNĐ", Model.PricePerDay)</p>
+
         <p><strong>Loại bằng:</strong> @Model.LicenseType</p>
 
         <p>
