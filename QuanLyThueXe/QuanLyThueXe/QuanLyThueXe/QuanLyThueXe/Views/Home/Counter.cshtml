@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Counter - Blazor Component";
+}
+
+<h2>Counter (Blazor Component)</h2>
+
+<div class="alert alert-info">
+    Đây là Blazor Component được render trong MVC View.
+</div>
+
+@(await Html.RenderComponentAsync<QuanLyThueXe.Components.Counter>(RenderMode.ServerPrerendered))
+

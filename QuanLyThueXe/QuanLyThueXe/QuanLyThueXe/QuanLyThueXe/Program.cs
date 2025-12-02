@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(); // Thêm hỗ trợ Razor Pages
+builder.Services.AddServerSideBlazor(); // Thêm hỗ trợ Blazor Server
 
 // Thêm DbContext
 builder.Services.AddDbContext<CarRentalDbContext>(options =>
@@ -29,6 +30,9 @@ app.UseAuthorization();
 
 // Map Razor Pages
 app.MapRazorPages();
+
+// Map Blazor Hub
+app.MapBlazorHub();
 
 // Map MVC Controllers
 app.MapControllerRoute(

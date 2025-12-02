@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using QuanLyThueXe.Models; // DbContext và entity
+using QuanLyThueXe.Models; // DbContext vï¿½ entity
 using System.Linq;
 
 namespace QuanLyThueXe.Controllers
@@ -16,11 +16,11 @@ namespace QuanLyThueXe.Controllers
 
         public IActionResult Index(string vehicleType)
         {
-            // L?y danh sách lo?i xe
+            // L?y danh sï¿½ch lo?i xe
             var types = new[] { "All", "Car", "Motorbike" };
             ViewBag.VehicleTypes = new SelectList(types, vehicleType ?? "All");
 
-            // L?y danh sách xe
+            // L?y danh sï¿½ch xe
             var cars = _db.Cars.AsQueryable();
 
             if (!string.IsNullOrEmpty(vehicleType) && vehicleType != "All")
@@ -31,6 +31,16 @@ namespace QuanLyThueXe.Controllers
             }
 
             return View(cars.ToList());
+        }
+
+        public IActionResult BlazorDemo()
+        {
+            return View();
+        }
+
+        public IActionResult Counter()
+        {
+            return View();
         }
     }
 }

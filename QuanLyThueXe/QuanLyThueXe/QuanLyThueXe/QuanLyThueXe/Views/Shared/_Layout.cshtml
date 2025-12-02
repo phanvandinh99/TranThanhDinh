@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <base href="~/" />
+    <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark navbar-expand-sm">
@@ -32,6 +34,9 @@
 
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="BlazorDemo">Test Blazor</a>
                     </li>
 
                     @if (role == "Admin")
@@ -85,5 +90,6 @@
     </div>
 
     @RenderSection("Scripts", required: false)
+    <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

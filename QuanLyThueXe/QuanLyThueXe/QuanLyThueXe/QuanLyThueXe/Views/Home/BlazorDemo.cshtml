@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "Demo Blazor Components";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Blazor Components Test(.razor)</h2>
+    <div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary">
+            <span>🏠</span> Về Trang chủ
+        </a>
+        <a asp-controller="Home" asp-action="Counter" class="btn btn-primary ms-2">
+            <span>🔢</span> Test Blazor
+        </a>
+    </div>
+</div>
+
+<div class="alert alert-info">
+   Trang demo các Blazor Components (file .razor) được tích hợp vào MVC.
+    <br />
+    Blazor Components cho phép tương tác real-time mà không cần reload trang.
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>1. Component Thống kê xe (CarStats.razor)</h3>
+        <p class="text-muted">Component này tự động cập nhật mỗi 30 giây và có thể làm mới thủ công.</p>
+        @(await Html.RenderComponentAsync<QuanLyThueXe.Components.CarStats>(RenderMode.ServerPrerendered))
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>2. Component Counter (Counter.razor)</h3>
+        <p class="text-muted">Component tương tác đơn giản với state management.</p>
+        <p><a asp-controller="Home" asp-action="Counter" class="btn btn-primary">Xem Counter Component</a></p>
+        <p class="small text-muted">Hoặc truy cập trực tiếp: <code>/Home/Counter</code></p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>📚 Hướng dẫn sử dụng Blazor Components</h5>
+            </div>
+            <div class="card-body">
+                <h6>Các file Blazor Component đã tạo:</h6>
+                <ul>
+                    <li><code>Components/CarStats.razor</code> - Component hiển thị thống kê xe với auto-refresh</li>
+                    <li><code>Components/Counter.razor</code> - Component demo tương tác cơ bản</li>
+                    <li><code>Components/_Imports.razor</code> - File import namespaces chung</li>
+                </ul>
+                
+                <h6 class="mt-3">Cách sử dụng trong MVC View:</h6>
+                <pre><code>@@(await Html.RenderComponentAsync&lt;QuanLyThueXe.Components.CarStats&gt;(RenderMode.ServerPrerendered))</code></pre>
+                
+                <h6 class="mt-3">Render Modes:</h6>
+                <ul>
+                    <li><strong>ServerPrerendered</strong>: Render trên server trước, sau đó kết nối SignalR</li>
+                    <li><strong>Server</strong>: Chỉ render trên server qua SignalR</li>
+                    <li><strong>Static</strong>: Render tĩnh, không tương tác</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+

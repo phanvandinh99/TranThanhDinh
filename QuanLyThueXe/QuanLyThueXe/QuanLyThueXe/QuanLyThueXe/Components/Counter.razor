@@ -1,0 +1,56 @@
+@* Removed @page directive - Component will be rendered via MVC route *@
+
+<h3>Counter (Blazor Component)</h3>
+
+<p>Đây là một ví dụ Blazor Component đơn giản với tương tác.</p>
+
+<div class="card">
+    <div class="card-body">
+        <p class="lead">Số đếm hiện tại: <strong class="text-primary">@currentCount</strong></p>
+        
+        <div class="btn-group" role="group">
+            <button class="btn btn-primary" @onclick="IncrementCount">
+                ➕ Tăng
+            </button>
+            <button class="btn btn-secondary" @onclick="DecrementCount">
+                ➖ Giảm
+            </button>
+            <button class="btn btn-warning" @onclick="ResetCount">
+                🔄 Reset
+            </button>
+        </div>
+        
+        <div class="mt-3">
+            <input type="number" class="form-control d-inline-block w-auto" @bind="incrementBy" />
+            <button class="btn btn-info ms-2" @onclick="IncrementByValue">
+                Tăng theo giá trị
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentCount = 0;
+    private int incrementBy = 1;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private void DecrementCount()
+    {
+        currentCount--;
+    }
+
+    private void ResetCount()
+    {
+        currentCount = 0;
+    }
+
+    private void IncrementByValue()
+    {
+        currentCount += incrementBy;
+    }
+}
+
